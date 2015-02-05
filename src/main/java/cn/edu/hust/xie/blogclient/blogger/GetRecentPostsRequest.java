@@ -1,0 +1,45 @@
+/*
+ * Copyright 2015 padicao.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package cn.edu.hust.xie.blogclient.blogger;
+
+/**
+ *
+ * @author padicao
+ */
+public class GetRecentPostsRequest extends Request{
+
+    private static final String METHOD_NAME = "blogger.getRecentPosts";
+    public static final int UNLIMITED = -1;
+    
+    public GetRecentPostsRequest(BloggerCore c, int number) {
+        super(METHOD_NAME);
+        if(number == UNLIMITED) {
+            params = new RequestParam[4];
+        } else {
+            params = new RequestParam[5];
+            params[4] = new RequestParam(XMLTags.I4, String.format("%d", number));
+        }
+        params[0] = c.getAppKey();
+        params[1] = c.getBlogId();
+        params[2] = c.getUserName();
+        params[3] = c.getPassWord(); 
+    }
+    @Override
+    public Response getResponseInstance() {
+        return new GetRecentPostsResponse();
+    }
+    
+}
