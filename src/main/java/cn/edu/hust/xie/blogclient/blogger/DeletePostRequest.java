@@ -15,6 +15,12 @@
  */
 package cn.edu.hust.xie.blogclient.blogger;
 
+import cn.edu.hust.xie.blogclient.BlogCore;
+import cn.edu.hust.xie.blogclient.XMLTags;
+import cn.edu.hust.xie.blogclient.RequestParam;
+import cn.edu.hust.xie.blogclient.Response;
+import cn.edu.hust.xie.blogclient.Request;
+
 /**
  *
  * @author padicao
@@ -23,8 +29,8 @@ public class DeletePostRequest extends Request {
 
     private static final String METHOD_NAME = "blogger.deletePost";
     
-    public DeletePostRequest(BloggerCore c, int post, boolean publish) {
-        super(METHOD_NAME);
+    protected DeletePostRequest(String call, BlogCore c, int post, boolean publish) {
+        super(call);
         params = new RequestParam[5];
         params[0] = c.getAppKey();
         params[1] = new RequestParam(XMLTags.I4, String.format("%d", post));
@@ -32,6 +38,11 @@ public class DeletePostRequest extends Request {
         params[3] = c.getPassWord();
         params[4] = new RequestParam(XMLTags.BOOLEAN, publish ? "1" : "0");
     }
+    
+    public DeletePostRequest(BlogCore c, int post, boolean publish) {
+        this(METHOD_NAME, c, post, publish);
+    }
+    
     @Override
     public Response getResponseInstance() {
         return new DeletePostResponse();

@@ -13,36 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package cn.edu.hust.xie.blogclient.blogger;
+package cn.edu.hust.xie.blogclient.metaweblog;
 
 import cn.edu.hust.xie.blogclient.Response;
+import java.util.Map;
 
 /**
  *
  * @author padicao
  */
-public class DeletePostResponse extends Response {
-
-    private boolean status;
+public class NewMediaObjectResponseMW extends Response {
+    private static final String ID = "id";
+    private static final String FILE = "file";
+    private static final String URL = "url";
+    private static final String TYPE = "type";
     
-    public DeletePostResponse() {
-        status = false;
+    private MediaInfo media;
+
+    public NewMediaObjectResponseMW() {
+        media = new MediaInfo();
+    }
+    
+    public MediaInfo getMedia() {
+        return media;
     }
     
     @Override
     public void loadXML(Object obj) {
-        String s = (String)obj;
-        //System.out.println(s);
-        int i = Integer.valueOf(s);
-        status = i == 1;
-    }
-    
-    public boolean getStatus() {
-        return status;
+        Map<String, Object> map = (Map<String, Object>)obj;
+        media.id = (String)map.get(ID);
+        media.file = (String)map.get(FILE);
+        media.url = (String)map.get(URL);
+        media.type = (String)map.get(TYPE);
     }
     
     @Override
     public String toString() {
-        return String.format("Delete Status : %s", String.valueOf(status));
+        return media.toString();
     }
 }

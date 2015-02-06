@@ -15,6 +15,8 @@
  */
 package cn.edu.hust.xie.blogclient.blogger;
 
+import cn.edu.hust.xie.blogclient.Response;
+
 /**
  *
  * @author padicao

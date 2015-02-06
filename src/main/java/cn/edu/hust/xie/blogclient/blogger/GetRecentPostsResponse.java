@@ -15,6 +15,7 @@
  */
 package cn.edu.hust.xie.blogclient.blogger;
 
+import cn.edu.hust.xie.blogclient.Response;
 import java.util.ArrayList;
 import java.util.List;
 

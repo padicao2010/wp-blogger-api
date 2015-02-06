@@ -15,7 +15,10 @@
  */
 package cn.edu.hust.xie.blogclient.blogger;
 
-import org.w3c.dom.Element;
+import cn.edu.hust.xie.blogclient.BlogCore;
+import cn.edu.hust.xie.blogclient.RequestParam;
+import cn.edu.hust.xie.blogclient.Response;
+import cn.edu.hust.xie.blogclient.Request;
 
 
 /**
@@ -26,12 +29,16 @@ public class GetUsersBlogsRequest extends Request {
 
     private static final String METHOD_NAME = "blogger.getUsersBlogs";
     
-    public GetUsersBlogsRequest(BloggerCore c) {
-        super(METHOD_NAME);
+    protected GetUsersBlogsRequest(String call, BlogCore c) {
+        super(call);
         this.params = new RequestParam[3];
         params[0] = c.getAppKey();
         params[1] = c.getUserName();
         params[2] = c.getPassWord();
+    }
+    
+    public GetUsersBlogsRequest(BlogCore c) {
+        this(METHOD_NAME, c);
     }
 
     @Override

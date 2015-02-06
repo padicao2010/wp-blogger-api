@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package cn.edu.hust.xie.blogclient.blogger;
+package cn.edu.hust.xie.blogclient;
 
 /**
  *
@@ -23,6 +23,7 @@ public class XMLTags {
     public static final String STRING = "string";
     public static final String I4 = "i4";
     public static final String INT = "int";
+    public static final String BASE64 = "base64";
     public static final String BOOLEAN= "boolean";
     public static final String STRUCT = "struct";
     public static final String ARRAY = "array";

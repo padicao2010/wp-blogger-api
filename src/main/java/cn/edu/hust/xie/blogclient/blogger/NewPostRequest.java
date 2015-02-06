@@ -15,6 +15,12 @@
  */
 package cn.edu.hust.xie.blogclient.blogger;
 
+import cn.edu.hust.xie.blogclient.BlogCore;
+import cn.edu.hust.xie.blogclient.XMLTags;
+import cn.edu.hust.xie.blogclient.RequestParam;
+import cn.edu.hust.xie.blogclient.Response;
+import cn.edu.hust.xie.blogclient.Request;
+
 /**
  *
  * @author padicao
@@ -23,7 +29,7 @@ public class NewPostRequest extends Request {
 
     private static final String METHOD_NAME = "blogger.newPost";
     
-    public NewPostRequest(BloggerCore c, String content, boolean publish) {
+    public NewPostRequest(BlogCore c, String content, boolean publish) {
         super(METHOD_NAME);
         params = new RequestParam[6];
         params[0] = c.getAppKey();

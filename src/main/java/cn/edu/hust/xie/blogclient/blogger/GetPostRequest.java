@@ -15,6 +15,12 @@
  */
 package cn.edu.hust.xie.blogclient.blogger;
 
+import cn.edu.hust.xie.blogclient.BlogCore;
+import cn.edu.hust.xie.blogclient.XMLTags;
+import cn.edu.hust.xie.blogclient.RequestParam;
+import cn.edu.hust.xie.blogclient.Response;
+import cn.edu.hust.xie.blogclient.Request;
+
 /**
  *
  * @author padicao
@@ -22,7 +28,7 @@ package cn.edu.hust.xie.blogclient.blogger;
 public class GetPostRequest extends Request {
     private static final String METHOD_NAME = "blogger.getPost";
     
-    public GetPostRequest(BloggerCore c, int post) {
+    public GetPostRequest(BlogCore c, int post) {
         super(METHOD_NAME);
         params = new RequestParam[4];
         params[0] = c.getAppKey();

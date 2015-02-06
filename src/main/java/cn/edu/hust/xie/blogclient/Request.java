@@ -13,12 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package cn.edu.hust.xie.blogclient.blogger;
+package cn.edu.hust.xie.blogclient;
 
 /**
  *
  * @author padicao
  */
-public abstract class Response {
-    public abstract void loadXML(Object obj);
+public abstract class Request {
+    protected Request(String name) {
+        methodName = name;
+    }
+    
+    public String getCallName() {
+        return methodName;
+    }
+    
+    public RequestParam[] getParams() {
+        return params;
+    }
+    
+    public abstract Response getResponseInstance();
+    
+    private String methodName;
+    protected RequestParam[] params;
 }

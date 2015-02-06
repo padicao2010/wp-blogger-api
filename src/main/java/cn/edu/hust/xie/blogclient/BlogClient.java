@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package cn.edu.hust.xie.blogclient.blogger;
+package cn.edu.hust.xie.blogclient;
 
+import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -25,12 +27,10 @@ import java.util.List;
 import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -51,22 +51,16 @@ import org.xml.sax.SAXException;
  *
  * @author padicao
  */
-public class BloggerCore {
+public class BlogClient {
 
+    private final DocumentBuilderFactory docBuildFactory;
+    private final DocumentBuilder docBuild;
+    private final TransformerFactory transformFactory;
+    private final Transformer transformer;
+    private final HttpClient httpClient;
     private final String URL;
-    private RequestParam appKey;
-    private RequestParam userName;
-    private RequestParam passWord;
-    private RequestParam blogId;
-
-    private DocumentBuilderFactory docBuildFactory;
-    private DocumentBuilder docBuild;
-    private TransformerFactory transformFactory = TransformerFactory.newInstance();
-    private Transformer transformer = transformFactory.newTransformer();
-
-    private HttpClient httpClient;
-
-    public BloggerCore(String url) throws ParserConfigurationException, TransformerConfigurationException {
+    
+    public BlogClient(String url) throws Exception {
         this.URL = url;
 
         docBuildFactory = DocumentBuilderFactory.newInstance();
@@ -77,64 +71,42 @@ public class BloggerCore {
         httpClient = new DefaultHttpClient();
     }
 
-    public RequestParam getAppKey() {
-        return appKey;
+    public Response doCall(Request req) throws Exception {
+        HttpPost post = new HttpPost(URL);
+        
+        String reqData = getXmlFromReq(req);
+        System.out.println(reqData);
+        StringEntity params = new StringEntity(reqData, "UTF-8");
+        post.setEntity(params);
+        HttpResponse response = httpClient.execute(post);
+        HttpEntity resEntity = response.getEntity();
+
+        if (resEntity != null) {
+            InputStream in = resEntity.getContent();
+            Response res = formatInput(in, req.getResponseInstance());
+            resEntity.consumeContent();
+            return res;
+        }
+        
+        return null;
     }
 
-    public void setAppKey(String app) {
-        appKey = new RequestParam(XMLTags.STRING, app);
-    }
-
-    public RequestParam getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String user) {
-        userName = new RequestParam(XMLTags.STRING, user);
-    }
-
-    public RequestParam getPassWord() {
-        return passWord;
-    }
-
-    public void setPassWord(String pw) {
-        passWord = new RequestParam(XMLTags.STRING, pw);
-    }
-    
-    public RequestParam getBlogId() {
-        return blogId;
-    }
-    
-    public void setBlogId(int blogid) {
-        blogId = new RequestParam(XMLTags.STRING, String.format("%d", blogid));
-    }
-
-    private Element createParamElement(Document doc, String type, String value) {
-        Element paramEle = doc.createElement(XMLTags.PARAM);
-        Element valueEle = doc.createElement(XMLTags.VALUE);
-        Element typeEle = doc.createElement(type);
-        typeEle.setTextContent(value);
-        valueEle.appendChild(typeEle);
-        paramEle.appendChild(valueEle);
-        return paramEle;
-    }
-    
     private static Node getNode(NodeList nodes, String name) {
-        for(int i = 0; i < nodes.getLength(); i++) {
+        for (int i = 0; i < nodes.getLength(); i++) {
             Node n = nodes.item(i);
-            if(n.getNodeName().equals(name)) {
+            if (n.getNodeName().equals(name)) {
                 return n;
             }
         }
         return null;
-    } 
-    
+    }
+
     private static Object xml2Struct(Node node) {
         Map<String, Object> result = new HashMap<String, Object>();
         NodeList nodes = node.getChildNodes();
-        for(int i = 0; i < nodes.getLength(); i++) {
+        for (int i = 0; i < nodes.getLength(); i++) {
             Node memberNod = nodes.item(i);
-            if(!memberNod.getNodeName().equals(XMLTags.MEMBER)) {
+            if (!memberNod.getNodeName().equals(XMLTags.MEMBER)) {
                 continue;
             }
             NodeList nameValues = memberNod.getChildNodes();
@@ -147,42 +119,42 @@ public class BloggerCore {
         }
         return result;
     }
-    
+
     private static Object xml2Array(Node node) {
         List<Object> result = new ArrayList<Object>();
         Node dataNod = getNode(node.getChildNodes(), XMLTags.DATA);
         NodeList nodes = dataNod.getChildNodes();
-        for(int i = 0; i < nodes.getLength(); i++) {
+        for (int i = 0; i < nodes.getLength(); i++) {
             Node valueNod = nodes.item(i);
-            if(valueNod.getNodeName().equals(XMLTags.VALUE)) {
+            if (valueNod.getNodeName().equals(XMLTags.VALUE)) {
                 Object item = xml2Object(valueNod);
                 result.add(item);
             }
         }
         return result;
     }
-    
-   private static Object xml2Object(Node node) {
-       NodeList nodes = node.getChildNodes();
-       for(int i = 0; i < nodes.getLength(); i++) {
-           Node n = nodes.item(i);
-            if(n.getNodeType() == Node.ELEMENT_NODE) {
+
+    private static Object xml2Object(Node node) {
+        NodeList nodes = node.getChildNodes();
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Node n = nodes.item(i);
+            if (n.getNodeType() == Node.ELEMENT_NODE) {
                 String name = n.getNodeName();
-                if(name.equals(XMLTags.STRUCT)) {
+                if (name.equals(XMLTags.STRUCT)) {
                     return xml2Struct(n);
-                } else if(name.equals(XMLTags.ARRAY)) {
+                } else if (name.equals(XMLTags.ARRAY)) {
                     return xml2Array(n);
                 } else {
                     return n.getTextContent();
                 }
             }
-       }
-       return null;
-   }
-    
+        }
+        return null;
+    }
+
     private ErrorResponse checkError(Node methodResponse) {
         Node faultEle = getNode(methodResponse.getChildNodes(), XMLTags.FAULT);
-        if(faultEle != null) {
+        if (faultEle != null) {
             Node valueNod = getNode(faultEle.getChildNodes(), XMLTags.VALUE);
             ErrorResponse ret = new ErrorResponse();
             Object xml = xml2Object(valueNod);
@@ -191,48 +163,37 @@ public class BloggerCore {
         }
         return null;
     }
-    
-    private  Response formatInput(InputStream in, Response response) throws SAXException, IOException {
-        Document resultDoc = docBuild.parse(in);
-        Node methodResponse =  getNode(resultDoc.getChildNodes(), XMLTags.METHOD_RESPONSE);
-        if(methodResponse == null) {
+
+    private Response formatInput(InputStream in, Response response) throws SAXException, IOException {
+       byte[] buffer = new byte[10240];
+        int len = in.read(buffer);
+        System.out.println(new String(buffer, 0, len));
+        
+        InputStream bin = new ByteArrayInputStream(buffer, 0, len);
+
+        Document resultDoc = docBuild.parse(bin);
+        
+        Node methodResponse = getNode(resultDoc.getChildNodes(), XMLTags.METHOD_RESPONSE);
+        if (methodResponse == null) {
             return null;
         }
-        
+
         ErrorResponse errRes = checkError(methodResponse);
-        if(errRes != null) {
+        if (errRes != null) {
             return errRes;
         }
-        
+
         Node paramsNod = getNode(methodResponse.getChildNodes(), XMLTags.PARAMS);
         Node paramNod = getNode(paramsNod.getChildNodes(), XMLTags.PARAM);
         Node valueNod = getNode(paramNod.getChildNodes(), XMLTags.VALUE);
-        
+
         response.loadXML(xml2Object(valueNod));
         return response;
     }
 
-    public Response doCall(Request req) throws TransformerException, IOException, SAXException {
-        HttpPost post = new HttpPost(URL);
-        
-        String reqData = getXmlFromReq(req);
-        System.out.println(reqData);
-        StringEntity params = new StringEntity(reqData, "UTF-8");
-        post.setEntity(params);
-        HttpResponse response = httpClient.execute(post);
-        HttpEntity resEntity = response.getEntity();
-
-        if (resEntity != null) {
-            InputStream in = resEntity.getContent();
-            return formatInput(in, req.getResponseInstance());
-        }
-        
-        return null;
-    }
-
-    public String getXmlFromReq(Request req) throws TransformerException, UnsupportedEncodingException {
+    private String getXmlFromReq(Request req) throws TransformerException, UnsupportedEncodingException {
         Document doc = docBuild.newDocument();
-        
+
         doc.setXmlVersion("1.0");
 
         Element rootElement = doc.createElement(XMLTags.METHOD_CALL);
@@ -242,7 +203,7 @@ public class BloggerCore {
 
         Element paramsEle = doc.createElement(XMLTags.PARAMS);
         for (RequestParam p : req.getParams()) {
-            paramsEle.appendChild(createParamElement(doc, p.getType(), p.getValue()));
+            paramsEle.appendChild(p.getElement(doc));
         }
         rootElement.appendChild(paramsEle);
         doc.appendChild(rootElement);

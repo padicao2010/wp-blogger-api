@@ -13,26 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package cn.edu.hust.xie.blogclient.blogger;
+package cn.edu.hust.xie.blogclient.metaweblog;
 
 /**
  *
  * @author padicao
  */
-public class RequestParam {
-    public RequestParam(String t, String v) {
-        type = t;
-        value = v;
-    }
+public class MediaInfo {
+    public String id;
+    public String file;
+    public String url;
+    public String type;
     
-    private String type;
-    private String value;
-
-    public String getType() {
-        return type;
-    }
-
-    public String getValue() {
-        return value;
+    @Override
+    public String toString() {
+        return String.format("%s, %s, %s, %s", id, file, url, type);
     }
 }

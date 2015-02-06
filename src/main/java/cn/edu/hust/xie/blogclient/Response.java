@@ -13,36 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package cn.edu.hust.xie.blogclient.blogger;
-
-import cn.edu.hust.xie.blogclient.Response;
+package cn.edu.hust.xie.blogclient;
 
 /**
  *
  * @author padicao
  */
-public class DeletePostResponse extends Response {
-
-    private boolean status;
-    
-    public DeletePostResponse() {
-        status = false;
-    }
-    
-    @Override
-    public void loadXML(Object obj) {
-        String s = (String)obj;
-        //System.out.println(s);
-        int i = Integer.valueOf(s);
-        status = i == 1;
-    }
-    
-    public boolean getStatus() {
-        return status;
-    }
-    
-    @Override
-    public String toString() {
-        return String.format("Delete Status : %s", String.valueOf(status));
-    }
+public abstract class Response {
+    public abstract void loadXML(Object obj);
 }

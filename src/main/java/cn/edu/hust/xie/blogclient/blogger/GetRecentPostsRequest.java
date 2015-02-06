@@ -15,6 +15,12 @@
  */
 package cn.edu.hust.xie.blogclient.blogger;
 
+import cn.edu.hust.xie.blogclient.BlogCore;
+import cn.edu.hust.xie.blogclient.XMLTags;
+import cn.edu.hust.xie.blogclient.RequestParam;
+import cn.edu.hust.xie.blogclient.Response;
+import cn.edu.hust.xie.blogclient.Request;
+
 /**
  *
  * @author padicao
@@ -24,7 +30,7 @@ public class GetRecentPostsRequest extends Request{
     private static final String METHOD_NAME = "blogger.getRecentPosts";
     public static final int UNLIMITED = -1;
     
-    public GetRecentPostsRequest(BloggerCore c, int number) {
+    public GetRecentPostsRequest(BlogCore c, int number) {
         super(METHOD_NAME);
         if(number == UNLIMITED) {
             params = new RequestParam[4];

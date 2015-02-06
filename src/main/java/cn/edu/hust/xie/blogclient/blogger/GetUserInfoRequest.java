@@ -15,6 +15,11 @@
  */
 package cn.edu.hust.xie.blogclient.blogger;
 
+import cn.edu.hust.xie.blogclient.BlogCore;
+import cn.edu.hust.xie.blogclient.RequestParam;
+import cn.edu.hust.xie.blogclient.Response;
+import cn.edu.hust.xie.blogclient.Request;
+
 /**
  *
  * @author padicao
@@ -23,7 +28,7 @@ public class GetUserInfoRequest extends Request {
 
     private static final String METHOD_NAME = "blogger.getUserInfo";
 
-    public GetUserInfoRequest(BloggerCore c) {
+    public GetUserInfoRequest(BlogCore c) {
         super(METHOD_NAME);
         this.params = new RequestParam[3];
         params[0] = c.getAppKey();

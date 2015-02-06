@@ -13,36 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package cn.edu.hust.xie.blogclient.blogger;
+package cn.edu.hust.xie.blogclient.metaweblog;
 
-import cn.edu.hust.xie.blogclient.Response;
+import cn.edu.hust.xie.blogclient.*;
 
 /**
  *
  * @author padicao
  */
-public class DeletePostResponse extends Response {
-
-    private boolean status;
+public class GetCategoriesRequestMW extends Request {
+    private static final String METHOD_NAME = "metaWeblog.getCategories";
     
-    public DeletePostResponse() {
-        status = false;
+    public GetCategoriesRequestMW(BlogCore c) {
+        super(METHOD_NAME);
+        params = new RequestParam[3];
+        params[0] = c.getBlogId();
+        params[1] = c.getUserName();
+        params[2] = c.getPassWord();
     }
     
     @Override
-    public void loadXML(Object obj) {
-        String s = (String)obj;
-        //System.out.println(s);
-        int i = Integer.valueOf(s);
-        status = i == 1;
+    public Response getResponseInstance() {
+        return new GetCategoriesResponseMW();
     }
     
-    public boolean getStatus() {
-        return status;
-    }
-    
-    @Override
-    public String toString() {
-        return String.format("Delete Status : %s", String.valueOf(status));
-    }
 }
