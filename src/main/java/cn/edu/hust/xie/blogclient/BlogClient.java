@@ -165,10 +165,9 @@ public class BlogClient {
     }
 
     private Response formatInput(InputStream in, Response response) throws SAXException, IOException {
-       byte[] buffer = new byte[10240];
+        byte[] buffer = new byte[102400];
         int len = in.read(buffer);
         System.out.println(new String(buffer, 0, len));
-        
         InputStream bin = new ByteArrayInputStream(buffer, 0, len);
 
         Document resultDoc = docBuild.parse(bin);

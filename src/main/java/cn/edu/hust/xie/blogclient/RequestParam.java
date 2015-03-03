@@ -15,6 +15,7 @@
  */
 package cn.edu.hust.xie.blogclient;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.w3c.dom.Document;
@@ -57,6 +58,8 @@ public class RequestParam {
             Element typeEle = doc.createElement(param.type);
             if(param.type.equals(XMLTags.STRUCT)) {
                 constructStructElement(doc, typeEle, param.value);
+            } else if(param.type.equals(XMLTags.ARRAY)) {
+                constructArrayElement(doc, typeEle, param.value);
             } else {
                 typeEle.setTextContent((String)param.value);
             }
@@ -67,13 +70,35 @@ public class RequestParam {
         }
     }
     
+    private void constructArrayElement(Document doc, Element root, Object obj) {
+        Element dataEle = doc.createElement(XMLTags.DATA);
+        List<Object> objList = (List<Object>)obj;
+        for(Object o : objList) {
+            Element valueEle = doc.createElement((XMLTags.VALUE));
+            RequestParam param = (RequestParam)o;
+            Element typeEle = doc.createElement(param.type);
+            if(param.type.equals(XMLTags.STRUCT)) {
+                constructStructElement(doc, typeEle, param.value);
+            } else if(param.type.equals((XMLTags.ARRAY))) {
+                constructStructElement(doc, typeEle, param.value);
+            } else {
+                typeEle.setTextContent((String)param.value);
+            }
+            valueEle.appendChild(typeEle);
+            dataEle.appendChild(valueEle);
+        }
+        root.appendChild(dataEle);
+    }
+    
     public Element getElement(Document doc) {
         Element paramEle = doc.createElement(XMLTags.PARAM);
         Element valueEle = doc.createElement(XMLTags.VALUE);
         Element typeEle = doc.createElement(type);
         if(type.equals(XMLTags.STRUCT)) {
             constructStructElement(doc, typeEle, value);
-        } else {
+        } else if(type.equals(XMLTags.ARRAY)) {
+            constructArrayElement(doc, typeEle, value);
+        } else{
             typeEle.setTextContent((String)value);
         }
         valueEle.appendChild(typeEle);
